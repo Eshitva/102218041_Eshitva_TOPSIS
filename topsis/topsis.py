@@ -65,7 +65,7 @@ def topsis(input_file, weights, impacts, result_file):
 
 def main():
     if len(sys.argv) != 5:
-        print("Usage: topsis <InputDataFile> <Weights> <Impacts> <ResultFileName>")
+        print("Usage: topsis <Weights> <Impacts> <InputDataFile> <ResultFileName>")
         sys.exit(1)
 
     input_file = sys.argv[3]
