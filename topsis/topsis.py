@@ -2,7 +2,6 @@ import sys
 import pandas as pd
 import numpy as np
 
-
 def validate_inputs(weights, impacts, num_criteria):
     weights = weights.split(',')
     impacts = impacts.split(',')
@@ -69,9 +68,9 @@ def main():
         print("Usage: topsis <InputDataFile> <Weights> <Impacts> <ResultFileName>")
         sys.exit(1)
 
-    input_file = sys.argv[1]
-    weights = sys.argv[2]
-    impacts = sys.argv[3]
+    input_file = sys.argv[3]
+    weights = sys.argv[1]
+    impacts = sys.argv[2]
     result_file = sys.argv[4]
 
     try:
