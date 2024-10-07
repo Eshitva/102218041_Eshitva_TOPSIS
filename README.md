@@ -141,20 +141,6 @@ If you have any questions, suggestions, or issues, feel free to contact me at `g
 
 ## Acknowledgments
 
-- Thanks to [Name or Organization] for their support.
+- Thanks to P.S. Rana for their support.
 - Inspired by the original TOPSIS method developed by C.L. Hwang and K. Yoon.
 ```
-
-### **Instructions for Customization:**
-
-1. **PyPI Badge:** If you want to include the PyPI version badge, replace `topsis-102218041` in the badge URL with your actual package name.
-  
-2. **Example Commands:** Ensure that the commands and examples match your actual package usage. Replace the placeholder values with real ones.
-
-3. **Contact Information:** Replace `your.email@example.com` with your actual contact email.
-
-4. **Repository URL:** Update any URLs to point to your actual GitHub repository.
-
-5. **Acknowledgments:** Customize the Acknowledgments section with any relevant names or organizations you wish to credit.
-
-By following these steps and customizing the provided template, you'll have a thorough and professional `README.md` file ready for your project!
