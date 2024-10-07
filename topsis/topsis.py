@@ -2,81 +2,82 @@ import sys
 import pandas as pd
 import numpy as np
 
-def validate_inputs(weights, impacts, num_criteria):
-    weights = weights.split(',')
-    impacts = impacts.split(',')
+def validateInputParameters(weightList, impactList, criteriaCount):
+    weightList = weightList.split(',')
+    impactList = impactList.split(',')
 
-    if len(weights) != num_criteria or len(impacts) != num_criteria:
-        raise ValueError(
-            "Number of weights and impacts must be equal to the number of criteria (columns from 2nd to last).")
+    if len(weightList) != criteriaCount or len(impactList) != criteriaCount:
+        raise ValueError("The number of weights and impacts must match the number of criteria (columns from 2nd to last).")
 
-    weights = [float(w) for w in weights]
+    weightList = [float(w) for w in weightList]
 
-    for impact in impacts:
+    for impact in impactList:
         if impact not in ['+', '-']:
-            raise ValueError("Impacts must be either '+' or '-'.")
+            raise ValueError("Impacts should be either '+' or '-'.")
 
-    return weights, impacts
+    return weightList, impactList
 
 
-def topsis(input_file, weights, impacts, result_file):
+def performTopsis(inputFileName, weightList, impactList, outputFileName):
     try:
-        df = pd.read_csv(input_file)
+        inputData = pd.read_csv(inputFileName)
     except FileNotFoundError:
-        raise FileNotFoundError(f"File '{input_file}' not found.")
+        raise FileNotFoundError(f"File '{inputFileName}' not found.")
 
-    if df.shape[1] < 3:
-        raise ValueError("Input file must contain at least three columns.")
+    if inputData.shape[1] < 3:
+        raise ValueError("The input file must have at least three columns.")
 
-    data = df.iloc[:, 1:].values
-    if not np.issubdtype(data.dtype, np.number):
-        raise ValueError("From 2nd to last columns must contain numeric values only.")
+    criteriaData = inputData.iloc[:, 1:].values
+    if not np.issubdtype(criteriaData.dtype, np.number):
+        raise ValueError("Columns from 2nd to last should contain numeric values only.")
 
-    num_criteria = data.shape[1]
-    weights, impacts = validate_inputs(weights, impacts, num_criteria)
-
-    
-    norm_data = data / np.sqrt((data ** 2).sum(axis=0))
-
-    weighted_data = norm_data * weights
+    criteriaCount = criteriaData.shape[1]
+    weightList, impactList = validateInputParameters(weightList, impactList, criteriaCount)
 
     
-    ideal_best = np.max(weighted_data, axis=0)
-    ideal_worst = np.min(weighted_data, axis=0)
+    normalizedData = criteriaData / np.sqrt((criteriaData ** 2).sum(axis=0))
 
-    for i, impact in enumerate(impacts):
+    
+    weightedData = normalizedData * weightList
+
+    
+    idealBest = np.max(weightedData, axis=0)
+    idealWorst = np.min(weightedData, axis=0)
+
+    for idx, impact in enumerate(impactList):
         if impact == '-':
-            ideal_best[i], ideal_worst[i] = ideal_worst[i], ideal_best[i]
-
-    separation_best = np.sqrt(((weighted_data - ideal_best) ** 2).sum(axis=1))
-    separation_worst = np.sqrt(((weighted_data - ideal_worst) ** 2).sum(axis=1))
+            idealBest[idx], idealWorst[idx] = idealWorst[idx], idealBest[idx]
 
     
-    topsis_score = separation_worst / (separation_best + separation_worst)
+    distanceToBest = np.sqrt(((weightedData - idealBest) ** 2).sum(axis=1))
+    distanceToWorst = np.sqrt(((weightedData - idealWorst) ** 2).sum(axis=1))
 
+    
+    topsisScores = distanceToWorst / (distanceToBest + distanceToWorst)
 
-    df['Topsis Score'] = topsis_score
-    df['Rank'] = df['Topsis Score'].rank(method='max', ascending=False).astype(int)
+    
+    inputData['Topsis Score'] = topsisScores
+    inputData['Rank'] = inputData['Topsis Score'].rank(method='max', ascending=False).astype(int)
 
-   
-    df.to_csv(result_file, index=False)
-    print(f"Results saved to '{result_file}'.")
+    
+    inputData.to_csv(outputFileName, index=False)
+    print(f"Results successfully saved to '{outputFileName}'.")
 
 
 def main():
     if len(sys.argv) != 5:
-        print("Usage: topsis <Weights> <Impacts> <InputDataFile> <ResultFileName>")
+        print("Usage: topsis <Weights> <Impacts> <InputDataFile> <OutputFileName>")
         sys.exit(1)
 
-    input_file = sys.argv[3]
-    weights = sys.argv[1]
-    impacts = sys.argv[2]
-    result_file = sys.argv[4]
+    inputFileName = sys.argv[3]
+    weightList = sys.argv[1]
+    impactList = sys.argv[2]
+    outputFileName = sys.argv[4]
 
     try:
-        topsis(input_file, weights, impacts, result_file)
-    except Exception as e:
-        print(f"Error: {e}")
+        performTopsis(inputFileName, weightList, impactList, outputFileName)
+    except Exception as error:
+        print(f"Error: {error}")
 
 if __name__ == "__main__":
     main()
